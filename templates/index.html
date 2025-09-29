@@ -13,7 +13,7 @@
         <div class="left-panel">
             <form id="image-form" enctype="multipart/form-data">
                 <div class="file-upload-wrapper">
-                    <input type="file" name="file" id="file-input" accept="image/*" required>
+                    <input type="file" name="file" id="file-input" accept="image/*" >
                     <label for="file-input" class="file-upload-label">
                         📁 画像を選択
                     </label>
@@ -59,6 +59,11 @@
     <script>
         //submitイベントリスナーのコード
         document.getElementById('image-form').addEventListener('submit',function(e){e.preventDefault(); //フォームがデフォルトで送信された後画面遷移しないようにしている
+            const fileInput = document.getElementById('file-input');
+            if(fileInput.files.length===0){
+                alert('画像ファイルを選択してください');
+                return;
+            }
             const form = e.target;
             const formData = new FormData(form);
             // 送られてきた全データ(ファイル+粗さor色彩)をformDataに格納

@@ -78,7 +78,7 @@ def process_image():
     MAX_SIZE = (800, 800)
     if processed_image.width > MAX_SIZE[0] or processed_image.height > MAX_SIZE[1]:
         processed_image.thumbnail(MAX_SIZE)
-    processed_image=Image.open(file.stream).convert("RGB") #Pillowを使って画像を開く&必ずRGBに変換してから処理を開始
+    processed_image=processed_image.convert("RGB") #Pillowを使って画像を開く&必ずRGBに変換してから処理を開始
     start_time=time.time() #計測開始
     #image = Image.open(file.stream)でrequest.filesの中のfileに格納されているバイトデータを画像として扱えるようimageオブジェクトに格納している
     #file.streamはrequest.filesから取得したファイルデータの中身そのものを指す(ストリームオブジェクト・バイトデータを読み書きするためのインタフェース)
