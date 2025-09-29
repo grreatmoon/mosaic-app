@@ -33,7 +33,7 @@ def process_image():
     
     if file: #もしfileの中身があれば…
         try: #パラメータの取得と例外処理
-            mosaic_level=int(request.form.get('moasic_level',10))
+            mosaic_level=int(request.form.get('mosaic_level',10))
             if mosaic_level < 2 or mosaic_level > 50:
                 mosaic_level=10
         except ValueError:
