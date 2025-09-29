@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request,send_file,redirect,url_for
+from flask import Flask,render_template,request,send_file,redirect,url_for,jsonify
 #render_templateはHTMLファイルを読み込んでwebに表示するために使う
 #requestはHTMLファイルから送信されたデータを受け取るために使う
 #send_fileはサーバー側(app.py)からwebページ(HTMLファイル)の方にファイルを送信するために使う
@@ -6,6 +6,9 @@ from flask import Flask,render_template,request,send_file,redirect,url_for
 #具体的には、Pythonプログラム内で画像の読み込み、相さ、保存を簡単に行えるようにする
 from PIL import Image
 import io #メモリ上でデータを扱うためのライブラリらしい
+import time #時間に関する関数を提供するライブラリ
+import base64 #バイナリデータをテキストデータに変換したり、その逆を行うためのライブラリ
+
 
 app = Flask(__name__)
 #これを書くことでFlaskアプリがどのファイルから起動されているかを教えることができる。
@@ -77,6 +80,9 @@ def process_image():
     #request.formで受け取れるのは テキスト入力欄、ラジオボタン、スライダー、チェックボックスなどの非ファイルのデータ。
     #request.filesで受け取れるのは ファイル入力欄からアップロードされたファイルデータ。
     #request.form.get('mode')でindex.htmlのinputタグのname属性で指定したmodeの値を取得している
+    
+    start_time=time.time() #計測開始
+
     if mode=='mosaic':
         try: #パラメータの取得と例外処理
             level=int(request.form.get('mosaic_level',10))
@@ -99,6 +105,9 @@ def process_image():
     
     else:#例外処理。modeがmosaicでもpopartでもない場合は元の画像を返す
         processed_image=image
+    
+    end_time=time.time() #計測終了
+    process_time=round(end_time - start_time,2) #処理時間を計測(小数点以下は2桁に丸める)
 
     #処理後の画像をメモリ上にpng形式で保存
     img_io = io.BytesIO() #メモリ上にバイナリデータを扱うためのオブジェクトを作成
@@ -108,9 +117,15 @@ def process_image():
     img_io.seek(0) #ファイルポインタを先頭に戻す
     #imageで色々いじったからストリーム(データの流れ=ファイルポインタ)が最後まで行ってしまっているので、ブラウザに送り返す時にデータが見つからないことを防ぐためseek(0)でポインタを先頭に戻している
 
+    #時間と画像ファイルを一緒に返すためにjson形式で返却
+    #jsonで画像を送るためにバイナリデータを文字列(Base64)に変換
+    img_base64=base64.b64encode(img_io.read()).decode('utf-8')
 
     #メモリ上のデータをブラウザに送り返す
-    return send_file(img_io,mimetype='image/png')
+    return jsonify({
+        'image_data': f'data:image/png;base64,{img_base64}',
+        'process_time':process_time
+    })
     #mimetypeの所で今から送るファイルがpng形式の画像ですよと知らせる。
     #このmimetypeを指定しないと、ブラウザ側が送られてきたデータを単なるバイナリデータとして表示しようとするらしい
 

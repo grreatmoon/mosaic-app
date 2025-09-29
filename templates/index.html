@@ -44,22 +44,32 @@
         document.getElementById('image-form').addEventListener('submit',function(e){e.preventDefault(); //フォームがデフォルトで送信された後画面遷移しないようにしている
             const form = e.target;
             const formData = new FormData(form);
-            // 送られてきた全データ(ファイル+粗さ)をformDataに格納
+            // 送られてきた全データ(ファイル+粗さor色彩)をformDataに格納
             const imageElement = document.getElementById('processed-image');
+            const resultDiv = document.getElementById('result');
             fetch('/process',{  //fetchで非同期でデータを送信
                 method:'POST',
                 body:formData
             })
             .then(response=> {
                 if(response.ok){
-                    return response.blob();
+                    return response.json(); //blob()→json()に変更.Blobオブジェクトとは画像データを扱うためのオブジェクト
                 }
                 throw new Error('画像処理に失敗しました');
             })
-            .then(imageBlob=>{//Blobオブジェクトとは画像データを扱うためのオブジェクト
-                const imageObjectURL = URL.createObjectURL(imageBlob); //下で使うためのURLを生成(もとはBlobオブジェクト)
-                imageElement.src = imageObjectURL;  //processed-imageのsrc属性にURLをセット
+            .then(data=>{ //dataは{image_data:"...",process_time:0.123}の形式
+                //画像の表示
+                imageElement.src = data.image_data;  //base64データを直接srcに設定
                 imageElement.style.display = 'block';
+                //処理時間の表示
+                let timeDisplay=document.getElementById('time-display');
+                if(!timeDisplay){
+                    timeDisplay=document.createElement('p');
+                    timeDisplay.id='time-display';
+                    resultDiv.appendChild(timeDisplay);
+                }
+                timeDisplay.textContent=`処理時間: ${data.process_time} 秒`;
+
             })
             .catch(error=>{ //エラー処理はjavaと同じ
                 console.error('Error:',error);
