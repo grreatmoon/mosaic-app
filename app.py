@@ -73,8 +73,13 @@ def process_image():
     is_mosaic = request.form.get('mode_mosaic') == 'on'
     is_popart = request.form.get('mode_popart') == 'on'
 
-    start_time=time.time() #計測開始
+
+    processed_image=Image.open(file.stream)
+    MAX_SIZE = (800, 800)
+    if processed_image.width > MAX_SIZE[0] or processed_image.height > MAX_SIZE[1]:
+        processed_image.thumbnail(MAX_SIZE)
     processed_image=Image.open(file.stream).convert("RGB") #Pillowを使って画像を開く&必ずRGBに変換してから処理を開始
+    start_time=time.time() #計測開始
     #image = Image.open(file.stream)でrequest.filesの中のfileに格納されているバイトデータを画像として扱えるようimageオブジェクトに格納している
     #file.streamはrequest.filesから取得したファイルデータの中身そのものを指す(ストリームオブジェクト・バイトデータを読み書きするためのインタフェース)
     #streamってのはファイル全体を一度にメモリに書き込むのではなく、必要な部分を少しずつ読み書きするための仕組み.データが時間の経過とともに連続的に流れるように扱われる概念のこと
