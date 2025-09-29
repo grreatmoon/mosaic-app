@@ -9,10 +9,26 @@
 
     <form id="image-form" enctype="multipart/form-data">
         <input type="file" name="file" accept="image/*" required>
-        <label for="mosaic_level">モザイクの粗さ:</label>
-        <input type="range" name="mosaic_level" id="mosaic_level_slider" min="2" max="50" value="10" oninput="this.nextElementSibling.value=this.value">
-        <output>10</output>
-        <button type="submit" id="submit-btn">画像をモザイク化</button>
+
+        <h3>処理モード選択</h3>
+        <input type="radio" name="mode" value="mosaic" id="mode-mosaic" checked onclick="toggleParams()">
+        <label for="mode-mosaic">モザイクアート</label>
+        <input type="radio" name="mode" value="popart" id="mode-popart" onclick="toggleParams()">
+        <label for="mode-popart">ポップアート</label>
+        <hr>
+
+        <div id="mosaic-params">
+            <label for="mosaic_level">モザイクの粗さ:</label>
+            <input type="range" name="mosaic_level" id="mosaic_level_slider" min="2" max="50" value="10" oninput="this.nextElementSibling.value=this.value">
+            <output>10</output>
+        </div>
+
+        <div id="popart-params" style="display:none;">
+            <label for="hue_shift">色相シフト</label>
+            <input type="range" name="hue_shift" id="hue_shift_slider" min="0" max="255" value="100" oninput="this.nextElementSibling.value=this.value">
+            <output>100</output>
+        </div>
+        <button type="submit" id="submit-btn">画像を処理</button>
     </form>
 
     <h2>処理結果</h2>
@@ -22,6 +38,7 @@
     </div>
 
     <script>
+        //submitイベントリスナーのコード
         document.getElementById('image-form').addEventListener('submit',function(e){e.preventDefault(); //フォームがデフォルトで送信された後画面遷移しないようにしている
             const form = e.target;
             const formData = new FormData(form);
@@ -42,11 +59,18 @@
                 imageElement.src = imageObjectURL;  //processed-imageのsrc属性にURLをセット
                 imageElement.style.display = 'block';
             })
-            .catch(error=>{
+            .catch(error=>{ //エラー処理はjavaと同じ
                 console.error('Error:',error);
                 alert('エラーが発生');
             });
         });
+
+        //パラメータ表示を切り替える関数
+        function toggleParams(){
+            const isMosaic = document.getElementById('mode-mosaic').checked;
+            document.getElementById('mosaic-params').style.display=isMosaic?'block' : 'none';
+            document.getElementById('popart-params').style.display=isMosaic?'none' : 'block';
+        }
     </script>
 
 </body>
