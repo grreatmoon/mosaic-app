@@ -6,39 +6,54 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='style.css')}}">
 </head>
 <body>
-    <h1>画像をアップロード</h1>
+    <h1>画像処理 Webアプリ</h1>
+    
+    <div class="container">
+        <!-- 左パネル：フォーム部分 -->
+        <div class="left-panel">
+            <form id="image-form" enctype="multipart/form-data">
+                <div class="file-upload-wrapper">
+                    <input type="file" name="file" id="file-input" accept="image/*" required>
+                    <label for="file-input" class="file-upload-label">
+                        📁 画像を選択
+                    </label>
+                    <span class="file-name" id="file-name"></span>
+                </div>
 
-    <form id="image-form" enctype="multipart/form-data">
-        <input type="file" name="file" accept="image/*" required>
+                <h3>処理モード選択</h3>
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" name="mode_mosaic" id="mode-mosaic" onclick="toggleParams()">
+                    <label for="mode-mosaic" class="checkbox-label">モザイクアート</label>
+                </div>
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" name="mode_popart" id="mode-popart" onclick="toggleParams()">
+                    <label for="mode-popart" class="checkbox-label">ポップアート</label>
+                </div>
+                <hr>
 
-        <h3>処理モード選択</h3>
-        <input type="checkbox" name="mode_mosaic" id="mode-mosaic" onclick="toggleParams()">
-        <!-- checkedはページが読み込まれたときにデフォルトでチェックが入っているようにすること.Onclickでボタンが押されたらtoggleParams()関数を呼び出している -->
-        <label for="mode-mosaic">モザイクアート</label>
-        <input type="checkbox" name="mode_popart" id="mode-popart" onclick="toggleParams()">
-        <label for="mode-popart">ポップアート</label>
-        <hr>
+                <div id="mosaic-params" class="slider-wrapper">
+                    <label for="mosaic_level">モザイクの粗さ:</label>
+                    <input type="range" name="mosaic_level" id="mosaic_level_slider" min="2" max="50" value="10" oninput="this.nextElementSibling.value=this.value">
+                    <output>10</output>
+                </div>
 
-        <div id="mosaic-params">
-            <label for="mosaic_level">モザイクの粗さ:</label>
-            <input type="range" name="mosaic_level" id="mosaic_level_slider" min="2" max="50" value="10" oninput="this.nextElementSibling.value=this.value">
-            <output>10</output>
+                <div id="popart-params" class="slider-wrapper" style="display:none;">
+                    <label for="hue_shift">色相シフト</label>
+                    <input type="range" name="hue_shift" id="hue_shift_slider" min="0" max="255" value="100" oninput="this.nextElementSibling.value=this.value">
+                    <output>100</output>
+                </div>
+                <button type="submit" id="submit-btn">画像を処理</button>
+            </form>
         </div>
 
-        <div id="popart-params" style="display:none;">  
-            <!-- 最初は非表示.noneが非表示でblockが表示.非表示だとdiv領域が消えて元あった空間に他の内容が詰めて表示される. -->
-            <label for="hue_shift">色相シフト</label>
-            <input type="range" name="hue_shift" id="hue_shift_slider" min="0" max="255" value="100" oninput="this.nextElementSibling.value=this.value">
-            <output>100</output>
+        <!-- 右パネル：処理結果 -->
+        <div class="right-panel">
+            <h2>処理結果</h2>
+            <div id="result">
+                <p id="time-display" style="display:none;"></p>
+                <img id="processed-image" src="" style="display: none;" alt="処理結果の画像">
+            </div>
         </div>
-        <button type="submit" id="submit-btn">画像を処理</button>
-    </form>
-
-    <h2>処理結果</h2>
-    <div id="result">
-        <p id="time-display" style="font-weight: bold; margin-bottom: 10px; display:none;"></p>
-        <img id="processed-image" src="" style="max-width: 100%; display: none;"alt="処理結果の画像"> 
-        <!-- display noneで画像を非表示状態にしている -->
     </div>
 
     <script>
@@ -82,6 +97,15 @@
             document.getElementById('popart-params').style.display=isPopart?'block' : 'none';
         }
         toggleParams(); //初期表示のために一度呼び出している
+    // ファイル名表示用のコード
+        document.getElementById('file-input').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || '';
+            document.getElementById('file-name').textContent = fileName ? `選択: ${fileName}` : '';
+        });
+        document.getElementById('file-input').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name || '';
+        document.getElementById('file-name').textContent = fileName ? `選択: ${fileName}` : '';
+        });
     </script>
 
 </body>
