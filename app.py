@@ -70,8 +70,11 @@ def process_image():
         return redirect(url_for('index'))
     #index.htmlからデータがrequest.filesに格納されて送られる→request.filesの中にfileという名前のデータがない場合またはfileはあるがその名前が空の場合はリダイレクトをしている
     
-    mode = request.form.get('mode')
-    image=Image.open(file.stream).convert("RGB") #Pillowを使って画像を開く&必ずRGBに変換してから処理を開始
+    is_mosaic = request.form.get('mode_mosaic') == 'on'
+    is_popart = request.form.get('mode_popart') == 'on'
+
+    start_time=time.time() #計測開始
+    processed_image=Image.open(file.stream).convert("RGB") #Pillowを使って画像を開く&必ずRGBに変換してから処理を開始
     #image = Image.open(file.stream)でrequest.filesの中のfileに格納されているバイトデータを画像として扱えるようimageオブジェクトに格納している
     #file.streamはrequest.filesから取得したファイルデータの中身そのものを指す(ストリームオブジェクト・バイトデータを読み書きするためのインタフェース)
     #streamってのはファイル全体を一度にメモリに書き込むのではなく、必要な部分を少しずつ読み書きするための仕組み.データが時間の経過とともに連続的に流れるように扱われる概念のこと
@@ -81,9 +84,9 @@ def process_image():
     #request.filesで受け取れるのは ファイル入力欄からアップロードされたファイルデータ。
     #request.form.get('mode')でindex.htmlのinputタグのname属性で指定したmodeの値を取得している
     
-    start_time=time.time() #計測開始
 
-    if mode=='mosaic':
+
+    if is_mosaic:
         try: #パラメータの取得と例外処理
             level=int(request.form.get('mosaic_level',10))
             if level < 2 or level > 50:
@@ -91,9 +94,9 @@ def process_image():
         except ValueError:
             level=10
         
-        processed_image = apply_mosaic_filter(image,level)
+        processed_image = apply_mosaic_filter(processed_image,level)
     
-    elif mode=='popart':
+    if is_popart:
         try:
             shift=int(request.form.get('hue_shift',100))
             if shift < 0 or shift > 255:
@@ -101,10 +104,7 @@ def process_image():
         except ValueError:
             shift=100
         
-        processed_image=apply_popart_filter(image,shift)
-    
-    else:#例外処理。modeがmosaicでもpopartでもない場合は元の画像を返す
-        processed_image=image
+        processed_image=apply_popart_filter(processed_image,shift)
     
     end_time=time.time() #計測終了
     process_time=round(end_time - start_time,2) #処理時間を計測(小数点以下は2桁に丸める)

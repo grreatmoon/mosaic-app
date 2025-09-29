@@ -12,10 +12,10 @@
         <input type="file" name="file" accept="image/*" required>
 
         <h3>処理モード選択</h3>
-        <input type="radio" name="mode" value="mosaic" id="mode-mosaic" checked onclick="toggleParams()">
+        <input type="checkbox" name="mode_mosaic" id="mode-mosaic" onclick="toggleParams()">
         <!-- checkedはページが読み込まれたときにデフォルトでチェックが入っているようにすること.Onclickでボタンが押されたらtoggleParams()関数を呼び出している -->
         <label for="mode-mosaic">モザイクアート</label>
-        <input type="radio" name="mode" value="popart" id="mode-popart" onclick="toggleParams()">
+        <input type="checkbox" name="mode_popart" id="mode-popart" onclick="toggleParams()">
         <label for="mode-popart">ポップアート</label>
         <hr>
 
@@ -77,9 +77,11 @@
         //パラメータ表示を切り替える関数
         function toggleParams(){//toggle⇒切替、params⇒パラメータ.パラメータの表示を切り替えるための関数
             const isMosaic = document.getElementById('mode-mosaic').checked;    //.checkedでmode-mosaicが選択されているかどうか(選択されていればtrue)
+            const isPopart = document.getElementById('mode-popart').checked;
             document.getElementById('mosaic-params').style.display=isMosaic?'block' : 'none';
-            document.getElementById('popart-params').style.display=isMosaic?'none' : 'block';
+            document.getElementById('popart-params').style.display=isPopart?'block' : 'none';
         }
+        toggleParams(); //初期表示のために一度呼び出している
     </script>
 
 </body>
