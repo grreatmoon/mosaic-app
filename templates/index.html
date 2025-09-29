@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>画像処理 Webアプリ</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='style.css')}}">
 </head>
 <body>
     <h1>画像をアップロード</h1>
@@ -35,6 +36,7 @@
 
     <h2>処理結果</h2>
     <div id="result">
+        <p id="time-display" style="font-weight: bold; margin-bottom: 10px; display:none;"></p>
         <img id="processed-image" src="" style="max-width: 100%; display: none;"alt="処理結果の画像"> 
         <!-- display noneで画像を非表示状態にしている -->
     </div>
@@ -46,6 +48,7 @@
             const formData = new FormData(form);
             // 送られてきた全データ(ファイル+粗さor色彩)をformDataに格納
             const imageElement = document.getElementById('processed-image');
+            const timeDisplay = document.getElementById('time-display');
             const resultDiv = document.getElementById('result');
             fetch('/process',{  //fetchで非同期でデータを送信
                 method:'POST',
@@ -62,14 +65,8 @@
                 imageElement.src = data.image_data;  //base64データを直接srcに設定
                 imageElement.style.display = 'block';
                 //処理時間の表示
-                let timeDisplay=document.getElementById('time-display');
-                if(!timeDisplay){
-                    timeDisplay=document.createElement('p');
-                    timeDisplay.id='time-display';
-                    resultDiv.appendChild(timeDisplay);
-                }
                 timeDisplay.textContent=`処理時間: ${data.process_time} 秒`;
-
+                timeDisplay.style.display = 'block'; //表示させる
             })
             .catch(error=>{ //エラー処理はjavaと同じ
                 console.error('Error:',error);
