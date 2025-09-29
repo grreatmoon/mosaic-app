@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>画像処理 Webアプリ</title>
+</head>
+<body>
+    <h1>画像をアップロード</h1>
+
+    <form action="/process" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <label for="mosaic_level">モザイクの粗さ(2~50):</label>
+        <input type="number" name="mosaic_level" id="mosaic_level" min="2" max="50" value="10" required>
+        <button type="submit">画像をモザイク化</button>
+    </form>
+
+    <h2>処理結果</h2>
+    <div id="result"></div>
+
+</body>
+</html>
