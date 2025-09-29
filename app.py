@@ -18,7 +18,7 @@ def apply_popart_filter(image,shift_value):
     hsv_image = image.convert('HSV')
 
     #2.ピクセルデータを取得
-    hsv_data = hsv_image.getdata()
+    hsv_data = hsv_image.getdata() #getdata()でimageからh,s,vを取得(タプルのリスト?らしい)
 
     new_data = []
     for h,s,v in hsv_data:
@@ -73,6 +73,10 @@ def process_image():
     #file.streamはrequest.filesから取得したファイルデータの中身そのものを指す(ストリームオブジェクト・バイトデータを読み書きするためのインタフェース)
     #streamってのはファイル全体を一度にメモリに書き込むのではなく、必要な部分を少しずつ読み書きするための仕組み.データが時間の経過とともに連続的に流れるように扱われる概念のこと
 
+
+    #request.formで受け取れるのは テキスト入力欄、ラジオボタン、スライダー、チェックボックスなどの非ファイルのデータ。
+    #request.filesで受け取れるのは ファイル入力欄からアップロードされたファイルデータ。
+    #request.form.get('mode')でindex.htmlのinputタグのname属性で指定したmodeの値を取得している
     if mode=='mosaic':
         try: #パラメータの取得と例外処理
             level=int(request.form.get('mosaic_level',10))
@@ -109,7 +113,7 @@ def process_image():
     return send_file(img_io,mimetype='image/png')
     #mimetypeの所で今から送るファイルがpng形式の画像ですよと知らせる。
     #このmimetypeを指定しないと、ブラウザ側が送られてきたデータを単なるバイナリデータとして表示しようとするらしい
-    return redirect(url_for('index'))
+
 
 if __name__ == '__main__':  #このファイルが直接実行された時のみwebサーバーを起動する
     app.run(debug=True)
