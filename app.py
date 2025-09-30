@@ -20,12 +20,12 @@ def apply_popart_filter(image,shift_value):
     #1.まずRGB画像をHSVに変換
     hsv_image = image.convert('HSV')
 
-    #2.ピクセルデータを取得
-    hsv_data = hsv_image.getdata() #getdata()でimageからh,s,vを取得(タプルのリスト?らしい)
+    #2.ピクセルデータを取得.getdata()でimageからh,s,vを取得(タプルのリスト?らしい)
+    hsv_data = hsv_image.getdata() 
 
+    #3.色相(h)をシフトさせ、0-255の範囲に収める
     new_data = []
     for h,s,v in hsv_data:
-        #3.色相(h)をシフトさせ、0-255の範囲に収める
         new_h=(h+shift_value)%256
         new_data.append((new_h,s,v))
     
@@ -37,19 +37,21 @@ def apply_popart_filter(image,shift_value):
 
 def apply_mosaic_filter(image,level):
     #画像を収縮・拡大してモザイクを書ける処理
-        original_width,original_height = image.size #画像の元のサイズを取得
-        #新しいサイズを設定
-        new_width = original_width // level
-        new_height = original_height // level
-        #画像を縮小してモザイク効果を作成
+    #1.画像の元のサイズを取得
+    original_width,original_height = image.size 
 
-        #実際に収縮させる
-        small_image = image.resize((new_width,new_height),Image.NEAREST)
-        #NEARESTは最近傍補間法で、画像を縮小する際に最も近いピクセルの色をそのまま使う方法
+    #2.levelで元のサイズを割って新しいサイズを設定.ここで画像を縮小してモザイク効果を作成
+    new_width = original_width // level
+    new_height = original_height // level
 
-        #元のサイズに拡大
-        mosaic_image = small_image.resize((original_width,original_height),Image.NEAREST)
-        return mosaic_image
+    #3.実際に収縮させる.収縮時,NEAREST(最近傍補間法を使ってくれる)で、画像を収縮する際に最も近いピクセルの色をそのまま使う方法
+    small_image = image.resize((new_width,new_height),Image.NEAREST)
+
+    #4.元のサイズに拡大
+    mosaic_image = small_image.resize((original_width,original_height),Image.NEAREST)
+    
+    #5.完成したモザイク画を返す
+    return mosaic_image
 
 #トップページ
 @app.route('/') 
